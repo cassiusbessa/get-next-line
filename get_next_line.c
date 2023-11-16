@@ -98,11 +98,11 @@ static char *get_line(t_list **lst)
 
 	if (lst == NULL)
 		return (NULL);
-	line = malloc(sizeof (char) * line_len(lst) + 1);
+	line = malloc(sizeof (char) * line_len(*lst) + 1);
 	if (!line)
 		return (NULL);
 	j = 0;
-	current = lst;
+	current = *lst;
 	while (current)
 	{
 		i = 0;
@@ -112,15 +112,15 @@ static char *get_line(t_list **lst)
 			{
 				line[j++] = '\n';
 				line[j] = '\0';
-				clean_list(&lst);
+				clean_list(lst);
 				return (line);
 			}
 			line[j++] = current->content[i++];
 		}
-		lst = lst->next;
+		lst = &(*lst)->next;
 	}
 	line[j] = '\0';
-	clean_list(&lst);
+	clean_list(lst);
 	return (line);
 }
 
@@ -147,7 +147,7 @@ char	*get_next_line(int fd)
 		buffer_line[count_read] = '\0';
 		ft_lstadd_back(&list, buffer_line);
 	}
-	return (get_line(list));
+	return (get_line(&list));
 }
 
 #include <fcntl.h>
@@ -156,5 +156,6 @@ int main(void)
 	int	fd = open("hino.txt", O_RDONLY);
 	printf("primeira chamada: %s\n", get_next_line(fd));
 	printf("segunda chamada: %s\n", get_next_line(fd));
+	printf("terceira chamada: %s\n", get_next_line(fd));
 	close(fd);
 }
