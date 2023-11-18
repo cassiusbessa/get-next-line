@@ -31,5 +31,6 @@ void	ft_lstadd_back(t_list **lst, void *content);
 size_t	ft_strlen(char *s);
 char	*ft_strdup(char *src);
 char	*ft_substr(char *s, unsigned int start, size_t len);
+size_t	line_len(t_list *lst);
 
 #endif

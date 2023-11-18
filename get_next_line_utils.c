@@ -51,6 +51,31 @@ void	free_list(t_list **lst)
 	*lst = NULL;
 }
 
+size_t	line_len(t_list *lst)
+{
+	t_list	*current;
+	size_t	count;
+	char	*content;
+
+	if (!lst)
+		return (0);
+	current = lst;
+	count = 0;
+	while (current)
+	{
+		content = current->content;
+		while (*content)
+		{
+			if (*content == '\n')
+				return (count + 1);
+			content++;
+			count++;
+		}
+		current = current->next;
+	}
+	return (count);
+}
+
 char	*ft_substr(char *s, unsigned int start, size_t len)
 {
 	size_t	i;

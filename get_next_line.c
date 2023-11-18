@@ -13,31 +13,6 @@
 #include "get_next_line.h"
 #include <stdio.h>
 
-static size_t	line_len(t_list *lst)
-{
-	t_list	*current;
-	size_t	count;
-	char	*content;
-
-	if (!lst)
-		return (0);
-	current = lst;
-	count = 0;
-	while (current)
-	{
-		content = current->content;
-		while (*content)
-		{
-			if (*content == '\n')
-				return (count + 1);
-			content++;
-			count++;
-		}
-		current = current->next;
-	}
-	return (count);
-}
-
 static int	find_line_break(t_list *lst)
 {
 	t_list	*current;
@@ -156,7 +131,7 @@ char	*get_next_line(int fd)
 	return (get_line(&list));
 }
 
-/*#include <fcntl.h>
+#include <fcntl.h>
 int main()
 {
     int fd = open("hino.txt", O_RDONLY);
@@ -223,4 +198,4 @@ int main()
     close(fd);
 
     return 0;
-}*/
+}
