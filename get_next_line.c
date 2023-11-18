@@ -78,7 +78,8 @@ static void clean_list(t_list **lst)
 	i = 0;
 	while (current->content[i] != '\n' && current->content[i])
 		i++;
-	(*lst)->content = ft_substr(current->content, i + 1, ft_strlen(current->content) - i);
+	(*lst)->content = ft_substr(current->content, i + 1,
+				ft_strlen(current->content) - i);
 }
 
 static char *get_line(t_list **lst)
@@ -121,20 +122,20 @@ static char *get_line(t_list **lst)
 
 void free_list(t_list **lst)
 {
-    t_list *current;
+	t_list *current;
 
-    if (!lst || !*lst)
-        return;
+	if (!lst || !*lst)
+		return;
 
-    current = *lst;
-    while (current)
-    {
-        *lst = current->next;
-        free(current->content);
-        free(current);
-        current = *lst;
-    }
-    *lst = NULL;
+	current = *lst;
+	while (current)
+	{
+		*lst = current->next;
+		free(current->content);
+		free(current);
+		current = *lst;
+	}
+	*lst = NULL;
 }
 
 char	*get_next_line(int fd)
@@ -162,17 +163,9 @@ char	*get_next_line(int fd)
 			free_list(&list);
 			return (NULL);
 		}
-		else
-		{
 			buffer_line[count_read] = '\0';
 			ft_lstadd_back(&list, buffer_line);
-		}
 	}
-	/*if (buffer_line) 
-	{
-		free(buffer_line);
-		buffer_line = NULL;
-	}*/
 	return (get_line(&list));
 }
 
