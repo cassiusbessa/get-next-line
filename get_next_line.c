@@ -49,7 +49,6 @@ static int find_line_break(t_list *lst)
 	while (current)
 	{
 		content = current->content;
-		printf("%s\n", content);
 		while (content && *content)
 		{
 			if (*content == '\n')
@@ -64,29 +63,22 @@ static int find_line_break(t_list *lst)
 static void clean_list(t_list **lst)
 {
 	t_list	*current;
-	t_list	*new;
 	size_t	i;
 
 	if (!lst || !*lst)
 		return ;
 	current = *lst;
 	while (current->next)
-		current = current->next;
+	{
+		*lst = current->next;
+		free(current->content);
+		free(current);
+		current = *lst;
+	}
 	i = 0;
 	while (current->content[i] != '\n' && current->content[i])
 		i++;
-	new = (t_list *)malloc(sizeof (t_list));
-	new->content = ft_substr(current->content, i + 1, ft_strlen(current->content) - i);
-	new->next = NULL;
-	while (*lst)
-	{
-		current = *lst;
-		*lst = (*lst)->next;
-		free(current->content);
-		free(current);
-	}
-	*lst = new;
-	printf("novo conteúdo da lista:%s\n", (*lst)->content);
+	(*lst)->content = ft_substr(current->content, i + 1, ft_strlen(current->content) - i);
 }
 
 static char *get_line(t_list **lst)
@@ -95,8 +87,9 @@ static char *get_line(t_list **lst)
 	int		j;
 	char	*line;
 	t_list	*current;
+	t_list	*temp;
 
-	if (lst == NULL)
+	if (lst == NULL || !(*lst)->content)
 		return (NULL);
 	line = malloc(sizeof (char) * line_len(*lst) + 1);
 	if (!line)
@@ -105,6 +98,7 @@ static char *get_line(t_list **lst)
 	current = *lst;
 	while (current)
 	{
+		temp = current->next;
 		i = 0;
 		while (current->content && current->content[i])
 		{
@@ -117,11 +111,30 @@ static char *get_line(t_list **lst)
 			}
 			line[j++] = current->content[i++];
 		}
-		lst = &(*lst)->next;
+		current = temp;
 	}
 	line[j] = '\0';
 	clean_list(lst);
-	return (line);
+	free(line);
+	return (NULL);
+}
+
+void free_list(t_list **lst)
+{
+    t_list *current;
+
+    if (!lst || !*lst)
+        return;
+
+    current = *lst;
+    while (current)
+    {
+        *lst = current->next;
+        free(current->content);
+        free(current);
+        current = *lst;
+    }
+    *lst = NULL;
 }
 
 char	*get_next_line(int fd)
@@ -137,25 +150,97 @@ char	*get_next_line(int fd)
 	{
 		buffer_line = (char *)malloc(sizeof (char) * BUFFER_SIZE + 1);
 		if (!buffer_line)
-			return (NULL);
-		count_read = read(fd, buffer_line, BUFFER_SIZE);
-		if (count_read < 0)
 		{
-			free(buffer_line);
+			free_list(&list);
 			return (NULL);
 		}
-		buffer_line[count_read] = '\0';
-		ft_lstadd_back(&list, buffer_line);
+		count_read = read(fd, buffer_line, BUFFER_SIZE);
+		if (count_read <= 0)
+		{
+			free(buffer_line);
+			buffer_line = NULL;
+			free_list(&list);
+			return (NULL);
+		}
+		else
+		{
+			buffer_line[count_read] = '\0';
+			ft_lstadd_back(&list, buffer_line);
+		}
 	}
+	/*if (buffer_line) 
+	{
+		free(buffer_line);
+		buffer_line = NULL;
+	}*/
 	return (get_line(&list));
 }
 
 #include <fcntl.h>
-int main(void)
+int main()
 {
-	int	fd = open("hino.txt", O_RDONLY);
-	printf("primeira chamada: %s\n", get_next_line(fd));
-	printf("segunda chamada: %s\n", get_next_line(fd));
-	printf("terceira chamada: %s\n", get_next_line(fd));
-	close(fd);
+    int fd = open("hino.txt", O_RDONLY);
+    char *a = get_next_line(fd);
+    printf("primeira chamada: %s", a);
+    free(a);
+
+    char *b = get_next_line(fd);
+    printf("segunda chamada: %s", b);
+    free(b);
+
+    char *c = get_next_line(fd);
+    printf("terceira chamada: %s", c);
+    free(c);
+
+    char *d = get_next_line(fd);
+    printf("quarta chamada: %s", d);
+    free(d);
+
+    char *e = get_next_line(fd);
+    printf("5 chamada: %s", e);
+    free(e);
+
+    /*char *f = get_next_line(fd);
+    printf("6 chamada: %s", f);
+    free(f);
+
+    char *g = get_next_line(fd);
+    printf("7 chamada: %s", g);
+    free(g);
+
+    char *h = get_next_line(fd);
+    printf("8 chamada: %s", h);
+    free(h);
+
+    char *i = get_next_line(fd);
+    printf("9 chamada: %s", i);
+    free(i);
+
+    char *j = get_next_line(fd);
+    printf("10 chamada: %s", j);
+    free(j);
+
+    char *k = get_next_line(fd);
+    printf("11 chamada: %s", k);
+    free(k);
+
+    char *l = get_next_line(fd);
+    printf("12 chamada: %s", l);
+    free(l);
+
+    char *m = get_next_line(fd);
+    printf("13 chamada: %s", m);
+    free(m);
+
+    char *n = get_next_line(fd);
+    printf("décima quinta chamada: %s", n);
+    free(n);
+
+    char *o = get_next_line(fd);
+    printf("14 chamada: %s", o);
+    free(o);*/
+
+    close(fd);
+
+    return 0;
 }
