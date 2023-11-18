@@ -13,7 +13,7 @@
 #include "get_next_line.h"
 #include <stdio.h>
 
-static size_t line_len(t_list *lst)
+static size_t	line_len(t_list *lst)
 {
 	t_list	*current;
 	size_t	count;
@@ -38,7 +38,7 @@ static size_t line_len(t_list *lst)
 	return (count);
 }
 
-static int find_line_break(t_list *lst)
+static int	find_line_break(t_list *lst)
 {
 	t_list	*current;
 	char	*content;
@@ -60,7 +60,7 @@ static int find_line_break(t_list *lst)
 	return (0);
 }
 
-static void clean_list(t_list **lst)
+static void	clean_list(t_list **lst)
 {
 	t_list	*current;
 	size_t	i;
@@ -80,25 +80,16 @@ static void clean_list(t_list **lst)
 	while (current->content[i] != '\n' && current->content[i])
 		i++;
 	line = ft_substr(current->content, i + 1,
-				ft_strlen(current->content) - i);
+			ft_strlen(current->content) - i);
 	free((*lst)->content);
 	(*lst)->content = line;
 }
 
-static char *get_line(t_list **lst)
+static char	*build_line(t_list **lst, char *line, int i, int j)
 {
-	int		i;
-	int		j;
-	char	*line;
 	t_list	*current;
 	t_list	*temp;
 
-	if (lst == NULL || !(*lst)->content)
-		return (NULL);
-	line = malloc(sizeof (char) * line_len(*lst) + 1);
-	if (!line)
-		return (NULL);
-	j = 0;
 	current = *lst;
 	while (current)
 	{
@@ -110,7 +101,6 @@ static char *get_line(t_list **lst)
 			{
 				line[j++] = '\n';
 				line[j] = '\0';
-				clean_list(lst);
 				return (line);
 			}
 			line[j++] = current->content[i++];
@@ -118,27 +108,23 @@ static char *get_line(t_list **lst)
 		current = temp;
 	}
 	line[j] = '\0';
-	clean_list(lst);
 	free(line);
 	return (NULL);
 }
 
-void free_list(t_list **lst)
+static char	*get_line(t_list **lst)
 {
-	t_list *current;
+	char	*line;
 
-	if (!lst || !*lst)
-		return;
-
-	current = *lst;
-	while (current)
-	{
-		*lst = current->next;
-		free(current->content);
-		free(current);
-		current = *lst;
-	}
-	*lst = NULL;
+	line = malloc(sizeof (char) * line_len(*lst) + 1);
+	if (!line)
+		return (NULL);
+	if (!lst || !(*lst) || !(*lst)->content)
+		return (NULL);
+	line = build_line(lst, line, 0, 0);
+	if (line)
+		clean_list(lst);
+	return (line);
 }
 
 char	*get_next_line(int fd)
@@ -147,10 +133,9 @@ char	*get_next_line(int fd)
 	char			*buffer_line;
 	int				count_read;
 
-	count_read = 1;
 	if (fd < 0 || BUFFER_SIZE <= 0)
 		return (NULL);
-	while (!find_line_break(list) && count_read)
+	while (!find_line_break(list))
 	{
 		buffer_line = (char *)malloc(sizeof (char) * BUFFER_SIZE + 1);
 		if (!buffer_line)
@@ -162,17 +147,16 @@ char	*get_next_line(int fd)
 		if (count_read <= 0)
 		{
 			free(buffer_line);
-			buffer_line = NULL;
 			free_list(&list);
 			return (NULL);
 		}
-			buffer_line[count_read] = '\0';
-			ft_lstadd_back(&list, buffer_line);
+		buffer_line[count_read] = '\0';
+		ft_lstadd_back(&list, buffer_line);
 	}
 	return (get_line(&list));
 }
 
-#include <fcntl.h>
+/*#include <fcntl.h>
 int main()
 {
     int fd = open("hino.txt", O_RDONLY);
@@ -196,7 +180,7 @@ int main()
     printf("5 chamada: %s", e);
     free(e);
 
-    /*char *f = get_next_line(fd);
+    char *f = get_next_line(fd);
     printf("6 chamada: %s", f);
     free(f);
 
@@ -234,9 +218,9 @@ int main()
 
     char *o = get_next_line(fd);
     printf("14 chamada: %s", o);
-    free(o);*/
+    free(o);
 
     close(fd);
 
     return 0;
-}
+}*/

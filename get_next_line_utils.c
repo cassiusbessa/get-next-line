@@ -34,6 +34,23 @@ void	ft_lstadd_back(t_list **lst, void *content)
 	current->next = new;
 }
 
+void	free_list(t_list **lst)
+{
+	t_list	*current;
+
+	if (!lst || !*lst)
+		return ;
+	current = *lst;
+	while (current)
+	{
+		*lst = current->next;
+		free(current->content);
+		free(current);
+		current = *lst;
+	}
+	*lst = NULL;
+}
+
 char	*ft_substr(char *s, unsigned int start, size_t len)
 {
 	size_t	i;

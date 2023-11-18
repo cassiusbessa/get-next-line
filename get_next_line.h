@@ -26,7 +26,7 @@ typedef struct s_list
 	struct s_list		*next;
 }						t_list;
 char	*get_next_line(int fd);
-t_list	*ft_lstnew(void *content);
+void	free_list(t_list **lst);
 void	ft_lstadd_back(t_list **lst, void *content);
 size_t	ft_strlen(char *s);
 char	*ft_strdup(char *src);
