@@ -43,10 +43,7 @@ char	*ft_substr(char *s, unsigned int start, size_t len)
 	if (!s)
 		return (NULL);
 	if (!len || start >= ft_strlen(s))
-	{
-		free(s);
 		return (ft_strdup(""));
-	}
 	size = ft_strlen(s + start);
 	if (size > len)
 		size = len;
@@ -60,7 +57,6 @@ char	*ft_substr(char *s, unsigned int start, size_t len)
 		i++;
 	}
 	sub[i] = '\0';
-	free(s);
 	return (sub);
 }
 

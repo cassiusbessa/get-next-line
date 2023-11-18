@@ -64,6 +64,7 @@ static void clean_list(t_list **lst)
 {
 	t_list	*current;
 	size_t	i;
+	char	*line;
 
 	if (!lst || !*lst)
 		return ;
@@ -78,8 +79,10 @@ static void clean_list(t_list **lst)
 	i = 0;
 	while (current->content[i] != '\n' && current->content[i])
 		i++;
-	(*lst)->content = ft_substr(current->content, i + 1,
+	line = ft_substr(current->content, i + 1,
 				ft_strlen(current->content) - i);
+	free((*lst)->content);
+	(*lst)->content = line;
 }
 
 static char *get_line(t_list **lst)
