@@ -1,17 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   get_next_line.c                                    :+:      :+:    :+:   */
+/*   get_next_line_bonus.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: caqueiro <caqueiro@student.42.rio>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/11/13 18:15:55 by caqueiro          #+#    #+#             */
-/*   Updated: 2023/11/13 19:25:45 by caqueiro         ###   ########.fr       */
+/*   Created: 2023/11/21 22:20:05 by caqueiro          #+#    #+#             */
+/*   Updated: 2023/11/21 22:20:09 by caqueiro         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "get_next_line.h"
-#include <stdio.h>
+#include "get_next_line_bonus.h"
 
 static int	find_line_break(t_list *lst)
 {
@@ -109,26 +108,26 @@ static char	*get_line(t_list **lst)
 
 char	*get_next_line(int fd)
 {
-	static t_list	*list;
+	static t_list	*list[MAX_FD];
 	char			*buffer_line;
 	int				count_read;
 
 	if (fd < 0 || BUFFER_SIZE <= 0 || read(fd, &buffer_line, 0) < 0)
 		return (NULL);
 	count_read = 1;
-	while (!find_line_break(list) && count_read)
+	while (!find_line_break(list[fd]) && count_read)
 	{
 		buffer_line = (char *)malloc(sizeof (char) * BUFFER_SIZE + 1);
 		if (!buffer_line)
 		{
-			free_list(&list);
+			free_list(&list[fd]);
 			return (NULL);
 		}
 		count_read = read(fd, buffer_line, BUFFER_SIZE);
 		buffer_line[count_read] = '\0';
-		ft_lstadd_back(&list, buffer_line);
+		ft_lstadd_back(&list[fd], buffer_line);
 	}
-	return (get_line(&list));
+	return (get_line(&list[fd]));
 }
 
 /*#include <fcntl.h>
