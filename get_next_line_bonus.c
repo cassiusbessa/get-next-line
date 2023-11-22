@@ -21,6 +21,7 @@ static int	find_line_break(t_list *lst)
 	if (!lst)
 		return (0);
 	current = lst;
+	content = current->content;
 	while (current)
 	{
 		content = current->content;
@@ -83,8 +84,7 @@ static char	*build_line(t_list **lst, char *line, int i, int j)
 		current = temp;
 	}
 	line[j] = '\0';
-	free(line);
-	return (NULL);
+	return (line);
 }
 
 static char	*get_line(t_list **lst)
@@ -97,8 +97,13 @@ static char	*get_line(t_list **lst)
 	if (!lst || !(*lst) || !(*lst)->content)
 		return (NULL);
 	line = build_line(lst, line, 0, 0);
-	if (line)
-		clean_list(lst);
+	clean_list(lst);
+	if (!*line)
+	{
+		free(line);
+		free_list(lst);
+		return (NULL);
+	}
 	return (line);
 }
 
@@ -108,9 +113,10 @@ char	*get_next_line(int fd)
 	char			*buffer_line;
 	int				count_read;
 
-	if (fd < 0 || BUFFER_SIZE <= 0)
+	if (fd < 0 || BUFFER_SIZE <= 0 || read(fd, &buffer_line, 0) < 0)
 		return (NULL);
-	while (!find_line_break(list))
+	count_read = 1;
+	while (!find_line_break(list) && count_read)
 	{
 		buffer_line = (char *)malloc(sizeof (char) * BUFFER_SIZE + 1);
 		if (!buffer_line)
@@ -119,22 +125,16 @@ char	*get_next_line(int fd)
 			return (NULL);
 		}
 		count_read = read(fd, buffer_line, BUFFER_SIZE);
-		if (count_read <= 0)
-		{
-			free(buffer_line);
-			free_list(&list);
-			return (NULL);
-		}
 		buffer_line[count_read] = '\0';
 		ft_lstadd_back(&list, buffer_line);
 	}
 	return (get_line(&list));
 }
 
-#include <fcntl.h>
+/*#include <fcntl.h>
 int main()
 {
-    int fd = open("hino.txt", O_RDONLY);
+    int fd = open("big_line_with_nl", O_RDONLY);
     char *a = get_next_line(fd);
     printf("primeira chamada: %s", a);
     free(a);
@@ -198,4 +198,4 @@ int main()
     close(fd);
 
     return 0;
-}
+}*/

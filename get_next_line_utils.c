@@ -85,7 +85,11 @@ char	*ft_substr(char *s, unsigned int start, size_t len)
 	if (!s)
 		return (NULL);
 	if (!len || start >= ft_strlen(s))
-		return (ft_strdup(""));
+	{
+		sub = (char *)malloc(sizeof (char) * 1);
+		sub[0] = '\0';
+		return (sub);
+	}
 	size = ft_strlen(s + start);
 	if (size > len)
 		size = len;
@@ -98,8 +102,7 @@ char	*ft_substr(char *s, unsigned int start, size_t len)
 		sub[i] = s[start + i];
 		i++;
 	}
-	sub[i] = '\0';
-	return (sub);
+	return (sub[i] = '\0', sub);
 }
 
 size_t	ft_strlen(char *s)
@@ -111,36 +114,3 @@ size_t	ft_strlen(char *s)
 		i++;
 	return (i);
 }
-
-char	*ft_strdup(char *src)
-{
-	char	*dup;
-	int		i;
-
-	i = 0;
-	while (src[i])
-		i++;
-	dup = (char *)malloc(((i + 1) * sizeof (char)));
-	if (!dup)
-		return (NULL);
-	i = 0;
-	while (src[i])
-	{
-		dup[i] = src[i];
-		i++;
-	}
-	dup[i] = '\0';
-	return (dup);
-}
-
-/*void	ft_print_list(t_list *lst)
-{
-	t_list	*current;
-
-	current = lst;
-	while (current)
-	{
-		printf("%s", (char *)current->content);
-		current = current->next;
-	}
-}*/
