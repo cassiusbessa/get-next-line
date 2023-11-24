@@ -112,7 +112,7 @@ char	*get_next_line(int fd)
 	char			*buffer_line;
 	int				count_read;
 
-	if (fd < 0 || BUFFER_SIZE <= 0 || read(fd, &buffer_line, 0) < 0)
+	if (fd < 0 || BUFFER_SIZE <= 0)
 		return (NULL);
 	count_read = 1;
 	while (!find_line_break(list) && count_read)
@@ -124,6 +124,11 @@ char	*get_next_line(int fd)
 			return (NULL);
 		}
 		count_read = read(fd, buffer_line, BUFFER_SIZE);
+		if (count_read < 0)
+		{
+			free(buffer_line);
+			return (NULL);
+		}
 		buffer_line[count_read] = '\0';
 		ft_lstadd_back(&list, buffer_line);
 	}
